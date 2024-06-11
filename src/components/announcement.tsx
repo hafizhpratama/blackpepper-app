@@ -5,7 +5,7 @@ import { Separator } from "./ui/separator";
 export function Announcement() {
   return (
     <Link
-      href="/docs/changelog"
+      href="#"
       className="inline-flex items-center rounded-lg bg-muted px-3 py-1 text-sm font-medium"
     >
       <Blocks className="h-4 w-4" />{" "}

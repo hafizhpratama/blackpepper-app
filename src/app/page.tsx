@@ -32,14 +32,11 @@ export default function LandingPage() {
               guide your journey towards building exceptional applications.
             </PageHeaderDescription>
             <PageActions>
-              <Link
-                href="/docs"
-                className={cn(buttonVariants(), "rounded-[6px]")}
-              >
+              <Link href="#" className={cn(buttonVariants(), "rounded-[6px]")}>
                 Get Started
               </Link>
               <Link
-                href="/components"
+                href="#"
                 className={cn(
                   buttonVariants({ variant: "outline" }),
                   "rounded-[6px]"
