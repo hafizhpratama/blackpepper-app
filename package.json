@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && prisma generate",
+    "build": "npx prisma db push && npx prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate"
@@ -37,7 +37,6 @@
     "nock": "^13.5.4",
     "nodemailer": "^6.9.13",
     "npm": "^10.7.0",
-    "prisma": "^5.14.0",
     "react": "^18",
     "react-dom": "^18",
     "react-email": "^2.1.4",
@@ -62,6 +61,7 @@
     "html-loader": "^5.0.0",
     "node-polyfill-webpack-plugin": "^4.0.0",
     "postcss": "^8",
+    "prisma": "^5.15.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }
