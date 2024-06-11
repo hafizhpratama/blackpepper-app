@@ -45,7 +45,7 @@ const Form = () => {
     <>
       {message && (
         <Alert className="text-green-600 border-green-600 mb-4">
-          <AlertTitle>Magic Link Send Successful!</AlertTitle>
+          <AlertTitle>Success!</AlertTitle>
           <AlertDescription>{message}</AlertDescription>
         </Alert>
       )}

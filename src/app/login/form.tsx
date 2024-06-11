@@ -50,7 +50,7 @@ const Form = () => {
       {errorMessage && (
         <Alert variant="destructive" className="mb-4">
           <XCircleIcon className="h-4 w-4" />
-          <AlertTitle>Login Error</AlertTitle>
+          <AlertTitle>Error!</AlertTitle>
           <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
       )}

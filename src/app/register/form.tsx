@@ -50,13 +50,13 @@ const Form = () => {
     <>
       {message && (
         <Alert className="text-green-600 border-green-600 mb-4">
-          <AlertTitle>Registration Successful!</AlertTitle>
+          <AlertTitle>Success!</AlertTitle>
           <AlertDescription>{message}</AlertDescription>
         </Alert>
       )}
       {error && (
         <Alert className="text-red-600 border-red-600 mb-4">
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>Error!</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}

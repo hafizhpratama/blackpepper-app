@@ -25,9 +25,7 @@ export default async function Page() {
             <Alert>
               <RocketIcon className="h-4 w-4" />
               <AlertTitle>Heads up!</AlertTitle>
-              <AlertDescription>
-                You can add components to your app using the cli.
-              </AlertDescription>
+              <AlertDescription>Welcome to Dashboard.</AlertDescription>
             </Alert>
           </div>
         </main>
