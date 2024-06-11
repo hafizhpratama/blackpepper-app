@@ -1,8 +1,17 @@
 import Header from "@/components/admin/header";
 import Settings from "./settings";
 import Footer from "@/components/footer";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function Page() {
+export default async function Page() {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    redirect("/login");
+  }
+
   return (
     <>
       <div className="flex min-h-screen w-full flex-col">
