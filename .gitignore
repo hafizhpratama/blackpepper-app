@@ -1,5 +1,4 @@
-node_modules
-.next
-.env
-.env.local
-generated
+node_modules/
+generated/
+.next/
+*.env*
