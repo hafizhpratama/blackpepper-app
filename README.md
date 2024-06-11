@@ -1,6 +1,6 @@
-# Next.js Boilerplate with App Router, Prisma, Next-Auth, Shadcn-UI, MongoDB, Mailtrap, and Google reCAPTCHA
+# Next.js Boilerplate with App Router, Prisma, Next-Auth, Shadcn-UI, MongoDB and Mailtrap
 
-Welcome to the **BlackPepper App**! This boilerplate is designed to give you a solid starting point for building modern web applications. It includes essential features and tools like Next.js with the App Router, Prisma for database management, Next-Auth for authentication, Shadcn-UI for a stunning user interface, MongoDB as the database, Mailtrap for email testing, and Google reCAPTCHA for security. Let's get you up and running quickly!
+Welcome to the **BlackPepper App**! This boilerplate is designed to give you a solid starting point for building modern web applications. It includes essential features and tools like Next.js with the App Router, Prisma for database management, Next-Auth for authentication, Shadcn-UI for a stunning user interface, MongoDB as the database and Mailtrap for email testing. Let's get you up and running quickly!
 
 ## Table of Contents
 
@@ -24,7 +24,6 @@ Welcome to the **BlackPepper App**! This boilerplate is designed to give you a s
 - **Shadcn-UI**: Beautifully designed UI components for a seamless user experience.
 - **MongoDB**: A flexible, scalable NoSQL database to store your data.
 - **Mailtrap**: Email testing tool for sending and receiving test emails.
-- **Google reCAPTCHA**: Protect your application from spam and abuse.
 
 ## Getting Started
 
@@ -79,9 +78,6 @@ Before you begin, ensure you have the following installed:
    EMAIL_FROM="your-email-from"
    EMAIL_BY=your-email-by
    NODE_ENV=development
-
-   RECAPTCHA_CLIENT_ID=your-recaptcha-client-id
-   RECAPTCHA_SERVER_ID=your-recaptcha-server-id
    ```
 
    Replace the placeholder values with your actual configuration details.

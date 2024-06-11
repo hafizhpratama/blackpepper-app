@@ -79,7 +79,3 @@ export const updateProfile = (data: ProfileRequest): Promise<ApiResponse> => {
 export const deleteAccount = (): Promise<ApiResponse> => {
   return apiCall<ApiResponse>("delete", "/user");
 };
-
-export const recaptcha = (token: string): Promise<ApiResponse> => {
-  return apiCall<ApiResponse>("post", "/validate-recaptcha", token);
-};

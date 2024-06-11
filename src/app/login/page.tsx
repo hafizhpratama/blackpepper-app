@@ -3,11 +3,11 @@
 import React, { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import Form from "./form";
 import Link from "next/link";
 import AuthLayout from "@/components/auth-layout";
 import LoginButton from "@/components/login-button";
 import TermsPrivacy from "@/components/terms-privacy";
+import Form from "./form";
 
 const Page: React.FC = () => {
   const { data: session } = useSession();

@@ -8,19 +8,12 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { XCircleIcon } from "lucide-react";
 import Spinner from "@/components/spinner";
 import { loginSchema } from "@/schemas/user";
-import {
-  GoogleReCaptchaProvider,
-  useGoogleReCaptcha,
-} from "react-google-recaptcha-v3";
-import axios from "axios";
-import { recaptcha } from "@/lib/actions";
 
-const LoginForm = () => {
+const Form = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,30 +23,6 @@ const LoginForm = () => {
     if (!validation.success) {
       setErrorMessage(validation.error.errors[0].message);
       return;
-    }
-
-    if (process.env.NODE_ENV === "production") {
-      if (!executeRecaptcha) {
-        setErrorMessage("Recaptcha not yet available.");
-        return;
-      }
-
-      try {
-        setLoading(true);
-        const token = await executeRecaptcha("login");
-
-        const response = await recaptcha(token);
-
-        if (response.status !== 200) {
-          setErrorMessage("Recaptcha validation failed.");
-          setLoading(false);
-          return;
-        }
-      } catch (error) {
-        setErrorMessage("An unexpected error occurred. Please try again.");
-        setLoading(false);
-        return;
-      }
     }
 
     try {
@@ -117,18 +86,6 @@ const LoginForm = () => {
         </Button>
       </form>
     </>
-  );
-};
-
-const Form = () => {
-  return process.env.NODE_ENV === "production" ? (
-    <GoogleReCaptchaProvider
-      reCaptchaKey={process.env.RECAPTCHA_CLIENT_ID as string}
-    >
-      <LoginForm />
-    </GoogleReCaptchaProvider>
-  ) : (
-    <LoginForm />
   );
 };
 
