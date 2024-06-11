@@ -1,5 +1,3 @@
-"use client";
-
 import React, { ReactNode } from "react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
