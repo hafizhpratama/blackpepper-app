@@ -40,13 +40,16 @@ const Settings = () => {
   const [profile, setProfile] = useState({
     name: "",
     email: "",
+  });
+  const [password, setPassword] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
   const [deleteEmail, setDeleteEmail] = useState("");
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [savingPassword, setSavingPassword] = useState(false);
   const [alertMessage, setAlertMessage] = useState<AlertMessage | null>(null);
   const [deleteEmailError, setDeleteEmailError] = useState("");
   const [open, setOpen] = useState(false);
@@ -61,9 +64,6 @@ const Settings = () => {
           setProfile({
             name: userData.data?.name as string,
             email: userData.data?.email as string,
-            currentPassword: "",
-            newPassword: "",
-            confirmPassword: "",
           });
         } catch (error: any) {
           console.log(error.response);
@@ -81,7 +81,19 @@ const Settings = () => {
   }, [session]);
 
   const handleUpdateProfile = async () => {
-    if (profile.newPassword !== profile.confirmPassword) {
+    try {
+      setSavingProfile(true);
+      const result = await updateProfile(profile);
+      setAlertMessage({ type: "success", text: result.message });
+    } catch (error: any) {
+      setAlertMessage({ type: "error", text: error });
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  const handleUpdatePassword = async () => {
+    if (password.newPassword !== password.confirmPassword) {
       setAlertMessage({
         type: "error",
         text: "New password and confirm password do not match",
@@ -90,13 +102,13 @@ const Settings = () => {
     }
 
     try {
-      setSaving(true);
-      const result = await updateProfile(profile);
+      setSavingPassword(true);
+      const result = await updateProfile(password);
       setAlertMessage({ type: "success", text: result.message });
     } catch (error: any) {
       setAlertMessage({ type: "error", text: error });
     } finally {
-      setSaving(false);
+      setSavingPassword(false);
     }
   };
 
@@ -178,8 +190,8 @@ const Settings = () => {
               </div>
             </CardContent>
             <CardFooter className="border-t px-6 py-4">
-              <Button onClick={handleUpdateProfile} disabled={saving}>
-                {saving ? <Spinner /> : "Save"}
+              <Button onClick={handleUpdateProfile} disabled={savingProfile}>
+                {savingProfile ? <Spinner /> : "Save"}
               </Button>
             </CardFooter>
           </Card>
@@ -197,10 +209,10 @@ const Settings = () => {
                   <Input
                     id="current-password"
                     type="password"
-                    value={profile.currentPassword}
+                    value={password.currentPassword}
                     onChange={(e) =>
-                      setProfile({
-                        ...profile,
+                      setPassword({
+                        ...password,
                         currentPassword: e.target.value,
                       })
                     }
@@ -212,9 +224,9 @@ const Settings = () => {
                   <Input
                     id="new-password"
                     type="password"
-                    value={profile.newPassword}
+                    value={password.newPassword}
                     onChange={(e) =>
-                      setProfile({ ...profile, newPassword: e.target.value })
+                      setPassword({ ...password, newPassword: e.target.value })
                     }
                     className="w-full"
                   />
@@ -224,10 +236,10 @@ const Settings = () => {
                   <Input
                     id="confirm-password"
                     type="password"
-                    value={profile.confirmPassword}
+                    value={password.confirmPassword}
                     onChange={(e) =>
-                      setProfile({
-                        ...profile,
+                      setPassword({
+                        ...password,
                         confirmPassword: e.target.value,
                       })
                     }
@@ -237,8 +249,8 @@ const Settings = () => {
               </div>
             </CardContent>
             <CardFooter className="border-t px-6 py-4">
-              <Button onClick={handleUpdateProfile} disabled={saving}>
-                {saving ? <Spinner /> : "Save"}
+              <Button onClick={handleUpdatePassword} disabled={savingPassword}>
+                {savingPassword ? <Spinner /> : "Save"}
               </Button>
             </CardFooter>
           </Card>
