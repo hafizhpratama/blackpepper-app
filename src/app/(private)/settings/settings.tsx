@@ -28,7 +28,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { fetchUserData, updateProfile, deleteAccount } from "@/lib/actions";
-import * as Yup from "yup";
+import { z } from "zod";
 
 interface AlertMessage {
   type: "success" | "error";
@@ -90,31 +90,36 @@ const Settings = () => {
     fetchData();
   }, [session]);
 
-  const profileSchema = Yup.object().shape({
-    name: Yup.string().required("Name is required"),
-    email: Yup.string().email("Email is invalid").required("Email is required"),
+  const profileSchema = z.object({
+    name: z.string().nonempty("Name is required"),
+    email: z
+      .string()
+      .email("Invalid email format")
+      .nonempty("Email is required"),
   });
 
-  const passwordSchema = Yup.object().shape({
-    currentPassword: Yup.string().required("Current password is required"),
-    newPassword: Yup.string().required("New password is required"),
-    confirmPassword: Yup.string()
-      .oneOf([Yup.ref("newPassword"), undefined], "Passwords must match")
-      .required("Confirm password is required"),
+  const passwordSchema = z.object({
+    currentPassword: z.string().nonempty("Current password is required"),
+    newPassword: z.string().nonempty("New password is required"),
+    confirmPassword: z
+      .string()
+      .nonempty("Confirm password is required")
+      .refine((value) => value === password.newPassword, {
+        message: "Passwords must match",
+      }),
   });
 
   const validateProfile = async () => {
     try {
-      await profileSchema.validate(profile, { abortEarly: false });
+      profileSchema.parse(profile);
       setProfileErrors({});
       return true;
     } catch (err) {
-      if (err instanceof Yup.ValidationError) {
-        const errors: { name?: string; email?: string } = {};
-        err.inner.forEach((validationError) => {
+      if (err instanceof z.ZodError) {
+        const errors: { [key: string]: string } = {};
+        err.errors.forEach((validationError) => {
           if (validationError.path) {
-            errors[validationError.path as keyof typeof errors] =
-              validationError.message;
+            errors[validationError.path[0]] = validationError.message;
           }
         });
         setProfileErrors(errors);
@@ -125,20 +130,15 @@ const Settings = () => {
 
   const validatePassword = async () => {
     try {
-      await passwordSchema.validate(password, { abortEarly: false });
+      passwordSchema.parse(password);
       setPasswordErrors({});
       return true;
     } catch (err) {
-      if (err instanceof Yup.ValidationError) {
-        const errors: {
-          currentPassword?: string;
-          newPassword?: string;
-          confirmPassword?: string;
-        } = {};
-        err.inner.forEach((validationError) => {
+      if (err instanceof z.ZodError) {
+        const errors: { [key: string]: string } = {};
+        err.errors.forEach((validationError) => {
           if (validationError.path) {
-            errors[validationError.path as keyof typeof errors] =
-              validationError.message;
+            errors[validationError.path[0]] = validationError.message;
           }
         });
         setPasswordErrors(errors);
