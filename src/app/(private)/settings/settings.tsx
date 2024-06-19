@@ -28,6 +28,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { fetchUserData, updateProfile, deleteAccount } from "@/lib/actions";
+import * as Yup from "yup";
 
 interface AlertMessage {
   type: "success" | "error";
@@ -51,6 +52,15 @@ const Settings = () => {
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [alertMessage, setAlertMessage] = useState<AlertMessage | null>(null);
+  const [profileErrors, setProfileErrors] = useState<{
+    name?: string;
+    email?: string;
+  }>({});
+  const [passwordErrors, setPasswordErrors] = useState<{
+    currentPassword?: string;
+    newPassword?: string;
+    confirmPassword?: string;
+  }>({});
   const [deleteEmailError, setDeleteEmailError] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -80,24 +90,81 @@ const Settings = () => {
     fetchData();
   }, [session]);
 
+  const profileSchema = Yup.object().shape({
+    name: Yup.string().required("Name is required"),
+    email: Yup.string().email("Email is invalid").required("Email is required"),
+  });
+
+  const passwordSchema = Yup.object().shape({
+    currentPassword: Yup.string().required("Current password is required"),
+    newPassword: Yup.string().required("New password is required"),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref("newPassword"), undefined], "Passwords must match")
+      .required("Confirm password is required"),
+  });
+
+  const validateProfile = async () => {
+    try {
+      await profileSchema.validate(profile, { abortEarly: false });
+      setProfileErrors({});
+      return true;
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        const errors: { name?: string; email?: string } = {};
+        err.inner.forEach((validationError) => {
+          if (validationError.path) {
+            errors[validationError.path as keyof typeof errors] =
+              validationError.message;
+          }
+        });
+        setProfileErrors(errors);
+      }
+      return false;
+    }
+  };
+
+  const validatePassword = async () => {
+    try {
+      await passwordSchema.validate(password, { abortEarly: false });
+      setPasswordErrors({});
+      return true;
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        const errors: {
+          currentPassword?: string;
+          newPassword?: string;
+          confirmPassword?: string;
+        } = {};
+        err.inner.forEach((validationError) => {
+          if (validationError.path) {
+            errors[validationError.path as keyof typeof errors] =
+              validationError.message;
+          }
+        });
+        setPasswordErrors(errors);
+      }
+      return false;
+    }
+  };
+
   const handleUpdateProfile = async () => {
+    if (!(await validateProfile())) {
+      return;
+    }
+
     try {
       setSavingProfile(true);
       const result = await updateProfile(profile);
       setAlertMessage({ type: "success", text: result.message });
     } catch (error: any) {
-      setAlertMessage({ type: "error", text: error });
+      setAlertMessage({ type: "error", text: error.message });
     } finally {
       setSavingProfile(false);
     }
   };
 
   const handleUpdatePassword = async () => {
-    if (password.newPassword !== password.confirmPassword) {
-      setAlertMessage({
-        type: "error",
-        text: "New password and confirm password do not match",
-      });
+    if (!(await validatePassword())) {
       return;
     }
 
@@ -106,7 +173,7 @@ const Settings = () => {
       const result = await updateProfile(password);
       setAlertMessage({ type: "success", text: result.message });
     } catch (error: any) {
-      setAlertMessage({ type: "error", text: error });
+      setAlertMessage({ type: "error", text: error.message });
     } finally {
       setSavingPassword(false);
     }
@@ -127,7 +194,7 @@ const Settings = () => {
         router.push("/login");
       }, 5000);
     } catch (error: any) {
-      setAlertMessage({ type: "error", text: error });
+      setAlertMessage({ type: "error", text: error.message });
     }
   };
 
@@ -174,6 +241,11 @@ const Settings = () => {
                     }
                     className="w-full"
                   />
+                  {profileErrors.name && (
+                    <div className="text-red-600 text-sm">
+                      {profileErrors.name}
+                    </div>
+                  )}
                 </div>
                 <div className="grid gap-3">
                   <Label htmlFor="email">Email</Label>
@@ -186,6 +258,11 @@ const Settings = () => {
                     }
                     className="w-full"
                   />
+                  {profileErrors.email && (
+                    <div className="text-red-600 text-sm">
+                      {profileErrors.email}
+                    </div>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -205,9 +282,9 @@ const Settings = () => {
             <CardContent>
               <div className="grid gap-6">
                 <div className="grid gap-3">
-                  <Label htmlFor="current-password">Current Password</Label>
+                  <Label htmlFor="currentPassword">Current Password</Label>
                   <Input
-                    id="current-password"
+                    id="currentPassword"
                     type="password"
                     value={password.currentPassword}
                     onChange={(e) =>
@@ -218,11 +295,16 @@ const Settings = () => {
                     }
                     className="w-full"
                   />
+                  {passwordErrors.currentPassword && (
+                    <div className="text-red-600 text-sm">
+                      {passwordErrors.currentPassword}
+                    </div>
+                  )}
                 </div>
                 <div className="grid gap-3">
-                  <Label htmlFor="new-password">New Password</Label>
+                  <Label htmlFor="newPassword">New Password</Label>
                   <Input
-                    id="new-password"
+                    id="newPassword"
                     type="password"
                     value={password.newPassword}
                     onChange={(e) =>
@@ -230,11 +312,16 @@ const Settings = () => {
                     }
                     className="w-full"
                   />
+                  {passwordErrors.newPassword && (
+                    <div className="text-red-600 text-sm">
+                      {passwordErrors.newPassword}
+                    </div>
+                  )}
                 </div>
                 <div className="grid gap-3">
-                  <Label htmlFor="confirm-password">Confirm Password</Label>
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
                   <Input
-                    id="confirm-password"
+                    id="confirmPassword"
                     type="password"
                     value={password.confirmPassword}
                     onChange={(e) =>
@@ -245,7 +332,17 @@ const Settings = () => {
                     }
                     className="w-full"
                   />
+                  {passwordErrors.confirmPassword && (
+                    <div className="text-red-600 text-sm">
+                      {passwordErrors.confirmPassword}
+                    </div>
+                  )}
                 </div>
+                {alertMessage?.type === "error" && (
+                  <div className="text-red-600 text-sm">
+                    {alertMessage.text}
+                  </div>
+                )}
               </div>
             </CardContent>
             <CardFooter className="border-t px-6 py-4">
